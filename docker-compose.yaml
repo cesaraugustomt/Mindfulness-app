@@ -1,0 +1,40 @@
+version: '3.1'
+
+networks:
+  api-network:
+    driver: bridge
+
+volumes:
+  mariadb-vol:
+
+services:     
+  app:
+    build: .
+    container_name: crud-api
+    depends_on:
+      - db                
+    ports: 
+        - 8686:8686          
+    environment:
+      - DB_HOST=db
+      - DB_USERNAME=root
+      - DB_PASSWORD=123456
+      - DB_DATABASE=sistema
+      - DB_PORT=3306
+      - WAIT_HOSTS=db:3306
+    volumes:
+      - .:/src/ 
+      
+    networks:
+      - "api-network"      
+  db:
+    image: mysql:5.7
+    environment:
+      - MYSQL_ROOT_PASSWORD=123456
+      - MYSQL_DATABASE=sistema
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./src/database:/app/api
+    networks:
+      - "api-network"
